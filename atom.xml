@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-03-07T03:00:59.660Z</updated>
+  <updated>2018-03-07T03:16:19.564Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,13 +17,21 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title></title>
-    <link href="http://yoursite.com/2018/03/07/%E5%B0%8F%E7%99%BD%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2github+hexo/"/>
-    <id>http://yoursite.com/2018/03/07/小白搭建博客github+hexo/</id>
-    <published>2018-03-07T03:00:59.660Z</published>
-    <updated>2018-03-07T03:00:59.660Z</updated>
+    <title>这是一个实验</title>
+    <link href="http://yoursite.com/2018/03/07/%E8%BF%99%E6%98%AF%E4%B8%80%E4%B8%AA%E5%AE%9E%E9%AA%8C/"/>
+    <id>http://yoursite.com/2018/03/07/这是一个实验/</id>
+    <published>2018-03-07T03:14:18.000Z</published>
+    <updated>2018-03-07T03:16:19.564Z</updated>
+    
+    <content type="html"><![CDATA[<p>请看下面照片：<img src="/2018/03/07/这是一个实验/1.jpg" title="这是一个新的博客的图片的说明"></p>]]></content>
     
     <summary type="html">
+    
+      
+      
+        &lt;p&gt;请看下面照片：&lt;img src=&quot;/2018/03/07/这是一个实验/1.jpg&quot; title=&quot;这是一个新的博客的图片的说明&quot;&gt;&lt;/p&gt;
+
+      
     
     </summary>
     
