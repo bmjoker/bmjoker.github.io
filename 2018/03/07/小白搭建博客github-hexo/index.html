@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+    <!-- title -->
+
+
+
+
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+    <title>小白搭建博客github+hexo · bmjoker&#39;s blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.7);
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s 1;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= /css/style.css?v=20180304 as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" type="text/css" href= /css/mobile.css?v=20180304 media="(max-width: 980px)"/>
+    <link rel="icon" href= /assets/favicon.ico>
+    <script>
+  // load webfont-loader async, and add callback function
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+  
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntroTags = document.getElementsByClassName('post-intro-tags')[0],
+        postIntroMeat = document.getElementsByClassName('post-intro-meta')[0];
+      if (postIntroTags) {
+        postIntroTags.classList.add('post-fade-in');
+      }
+      if (postIntroMeat) {
+        postIntroMeat.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  async("https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", asyncCb)
+</script>
+    <script>
+        (function (w) {
+            "use strict";
+            // rel=preload support test
+            if (!w.loadCSS) {
+                w.loadCSS = function () { };
+            }
+            // define on the loadCSS obj
+            var rp = loadCSS.relpreload = {};
+            // rel=preload feature support test
+            // runs once and returns a function for compat purposes
+            rp.support = (function () {
+                var ret;
+                try {
+                    ret = w.document.createElement("link").relList.supports("preload");
+                } catch (e) {
+                    ret = false;
+                }
+                return function () {
+                    return ret;
+                };
+            })();
+
+            // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+            // then change that media back to its intended value on load
+            rp.bindMediaToggle = function (link) {
+                // remember existing media attr for ultimate state, or default to 'all'
+                var finalMedia = link.media || "all";
+
+                function enableStylesheet() {
+                    link.media = finalMedia;
+                }
+
+                // bind load handlers to enable media
+                if (link.addEventListener) {
+                    link.addEventListener("load", enableStylesheet);
+                } else if (link.attachEvent) {
+                    link.attachEvent("onload", enableStylesheet);
+                }
+
+                // Set rel and non-applicable media type to start an async request
+                // note: timeout allows this to happen async to let rendering continue in IE
+                setTimeout(function () {
+                    link.rel = "stylesheet";
+                    link.media = "only x";
+                });
+                // also enable media after 3 seconds,
+                // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+                setTimeout(enableStylesheet, 3000);
+            };
+
+            // loop through link elements in DOM
+            rp.poly = function () {
+                // double check this to prevent external calls from running
+                if (rp.support()) {
+                    return;
+                }
+                var links = w.document.getElementsByTagName("link");
+                for (var i = 0; i < links.length; i++) {
+                    var link = links[i];
+                    // qualify links to those with rel=preload and as=style attrs
+                    if (link.rel === "preload" && link.getAttribute("as") === "style" && !link.getAttribute("data-loadcss")) {
+                        // prevent rerunning on link
+                        link.setAttribute("data-loadcss", true);
+                        // bind listeners to toggle media back
+                        rp.bindMediaToggle(link);
+                    }
+                }
+            };
+
+            // if unsupported, run the polyfill
+            if (!rp.support()) {
+                // run once at least
+                rp.poly();
+
+                // rerun poly on an interval until onload
+                var run = w.setInterval(rp.poly, 500);
+                if (w.addEventListener) {
+                    w.addEventListener("load", function () {
+                        rp.poly();
+                        w.clearInterval(run);
+                    });
+                } else if (w.attachEvent) {
+                    w.attachEvent("onload", function () {
+                        rp.poly();
+                        w.clearInterval(run);
+                    });
+                }
+            }
+            // commonjs
+            if (typeof exports !== "undefined") {
+                exports.loadCSS = loadCSS;
+            }
+            else {
+                w.loadCSS = loadCSS;
+            }
+        }(typeof global !== "undefined" ? global : this));
+    </script>
+    <script src="//cdn.staticfile.org/jquery/3.2.1/jquery.min.js" defer></script>
+    <script src="/scripts/main.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >bmjoker&#39;s blog.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">小白搭建博客github+hexo</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>bmjoker's blog.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style=
+
+
+
+
+
+
+height:50vh;
+
+>
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            小白搭建博客github+hexo
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <!-- 文章页标签  -->
+            
+            <div class="post-intro-meta">
+                <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                <span class="post-intro-time">2018/03/07</span>
+                
+                <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                    <span class="iconfont-archer">&#xe602;</span>
+                    <span id="busuanzi_value_page_pv"></span>
+                </span>
+                
+                <span class="shareWrapper">
+                    <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                    <span class="shareText">Share</span>
+                    <ul class="shareList">
+                        <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                            <div class="share-qrcode"></div>
+                        </li>
+                        <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                        <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                        <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                        <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                    </ul>
+                </span>
+            </div>
+        
+    </div>
+</div>
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>一、Github的优点</p>
+<pre><code>GitHub是基于git实现的代码托管。git可能是目前最好用的版本控制系统了，非常受欢迎。
+GitHub可以免费使用，并且快速稳定。
+Github上面的世界很精彩，用久了你的眼界会开阔很多。
+</code></pre><p>二、什么是Github Pages</p>
+<p>Github Pages可以被认为是用户编写的、托管在github上的静态网页。<br>三、为什么要使用Github Pages</p>
+<pre><code>可以绑定你的域名(但暂时貌似只能绑定一个)。
+简单快捷，使用Github Pages可以为你提供一个免费的服务器，免去了自己搭建服务器和写数据库的麻烦。
+</code></pre><p>安装Node.js<br></p>
+<p>在 Windows 环境下安装 Node.js 非常简单，仅须到官网下载安装文件并执行即可完成安装。</p>
+<p>像我的是Windows 64位，直接下载安装，不需要配置环境变量。</p>
+<p>安装Git</p>
+<p>下载 msysgit 并执行即可完成安装。(上官网要翻墙，如果你的是64位，可以点击此处下载)</p>
+<p>怎么打开Git？<br>    <br>    </p>
+<pre><code>Git基本操作：
+{% asset_img 4.jpg %}
+</code></pre><p>Hexo</p>
+<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
+<p>一、Hexo安装</p>
+<p>桌面右键鼠标，点击Git Bash Here，输入npm命令即可安装</p>
+<hr>
+<p>npm install hexo-cli -g<br>npm install hexo –save</p>
+<p>#如果命令无法运行，可以尝试更换taobao的npm源</p>
+<h2 id="npm-install-g-cnpm-–registry-https-registry-npm-taobao-org"><a href="#npm-install-g-cnpm-–registry-https-registry-npm-taobao-org" class="headerlink" title="npm install -g cnpm –registry=https://registry.npm.taobao.org"></a>npm install -g cnpm –registry=<a href="https://registry.npm.taobao.org" target="_blank" rel="noopener">https://registry.npm.taobao.org</a></h2><p>二、Hexo初始化配置<br>创建Hexo文件夹</p>
+<h2 id="安装完成后，根据自己喜好建立目录（如F-Blog-Hexo），直接进入F-Blog-Hexo文件夹下右键鼠标，点击Git-Bash-Here，进入Git命令框，执行以下操作。"><a href="#安装完成后，根据自己喜好建立目录（如F-Blog-Hexo），直接进入F-Blog-Hexo文件夹下右键鼠标，点击Git-Bash-Here，进入Git命令框，执行以下操作。" class="headerlink" title="安装完成后，根据自己喜好建立目录（如F:\Blog\Hexo），直接进入F:\Blog\Hexo文件夹下右键鼠标，点击Git Bash Here，进入Git命令框，执行以下操作。"></a>安装完成后，根据自己喜好建立目录（如F:\Blog\Hexo），直接进入F:\Blog\Hexo文件夹下右键鼠标，点击Git Bash Here，进入Git命令框，执行以下操作。</h2><p>$ hexo init</p>
+<h2 id="npm-install"><a href="#npm-install" class="headerlink" title="$ npm install"></a>$ npm install</h2><p>安装 Hexo 完成后，Hexo 将会在指定文件夹中新建所需要的文件。Hexo文件夹下的目录如下：<br></p>
+<p>安装Hexo插件</p>
+<p>如果想不出错，就将下面的插件都安装完。</p>
+<hr>
+<p>npm install hexo-generator-index –save<br>npm install hexo-generator-archive –save<br>npm install hexo-generator-category –save<br>npm install hexo-generator-tag –save<br>npm install hexo-server –save<br>npm install hexo-deployer-git –save<br>npm install hexo-deployer-heroku –save<br>npm install hexo-deployer-rsync –save<br>npm install hexo-deployer-openshift –save<br>npm install <a href="mailto:hexo-renderer-marked@0.2" target="_blank" rel="noopener">hexo-renderer-marked@0.2</a> –save<br>npm install <a href="mailto:hexo-renderer-stylus@0.2" target="_blank" rel="noopener">hexo-renderer-stylus@0.2</a> –save<br>npm install hexo-generator-feed@1 –save</p>
+<h2 id="npm-install-hexo-generator-sitemap-1-–save"><a href="#npm-install-hexo-generator-sitemap-1-–save" class="headerlink" title="npm install hexo-generator-sitemap@1 –save"></a>npm install hexo-generator-sitemap@1 –save</h2><p>本地查看效果</p>
+<h2 id="执行下面语句，执行完即可登录localhost-4000查看效果"><a href="#执行下面语句，执行完即可登录localhost-4000查看效果" class="headerlink" title="执行下面语句，执行完即可登录localhost:4000查看效果"></a>执行下面语句，执行完即可登录localhost:4000查看效果</h2><p>hexo generate</p>
+<h2 id="hexo-server"><a href="#hexo-server" class="headerlink" title="hexo server"></a>hexo server</h2><p>登录localhost:4000，即可看到本地的效果如下：<br><br>将博客部署到Github Pages上</p>
+<p>那么现在本地的博客已经搭建起来了，但是我们只可以通过本地连接查看我们的博客。那么我们现在需要做的就是把本地的博客发布到服务器上，让别人也可以连接我们的博客，而Github Pages就帮我完成了这件事情。但是Github Pages的代码就是寄存在Github上面的。那么接下来我们需要在Github上面创建一个新的项目。<br>一、注册Github账户</p>
+<pre><code>访问Github首页
+点击右上角的 Sign Up，注册自己的账户
+</code></pre><p>二、创建项目代码库</p>
+<pre><code>注册完登陆后，我们就创建一个我们自己的Github Pages项目。点击New repository。
+
+创建要点如下：
+</code></pre><p>三、配置SSH密钥</p>
+<p>配置Github的SSH密钥可以让本地git项目与远程的github建立联系，让我们在本地写了代码之后直接通过git操作就可以实现本地代码库与Github代码库同步。操作如下：<br>第一步、看看是否存在SSH密钥(keys)</p>
+<p>首先，我们需要看看是否看看本机是否存在SSH keys,打开Git Bash,并运行:</p>
+<p>$ cd ~/. ssh </p>
+<p>检查你本机用户home目录下是否存在.ssh目录</p>
+<p>如果，不存在此目录，则进行第二步操作，否则，你本机已经存在ssh公钥和私钥，可以略过第二步，直接进入第三步操作。<br>第二步、创建一对新的SSH密钥(keys)</p>
+<p>$ssh-keygen -t rsa -C “<a href="mailto:your_email@example.com" target="_blank" rel="noopener">your_email@example.com</a>“</p>
+<p>#这将按照你提供的邮箱地址，创建一对密钥<br>Generating public/private rsa key pair.<br>Enter file in which to save the key (/c/Users/you/.ssh/id_rsa): [Press enter]</p>
+<p>直接回车，则将密钥按默认文件进行存储。此时也可以输入特定的文件名，比如/c/Users/you/.ssh/github_rsa</p>
+<p>接着，根据提示，你需要输入密码和确认密码（说到这里，如果你很放心，其实可以不用密码，就是到输密码的地方，都直接回车，所以每次push就只管回车就行了。所谓的最安全的密码，就是没有密码 哈哈）。相关提示如下：</p>
+<p>Enter passphrase (empty for no passphrase): [Type a passphrase]<br>Enter same passphrase again: [Type passphrase again]</p>
+<p>输入完成之后，屏幕会显示如下信息：</p>
+<p>Your identification has been saved in /c/Users/you/.ssh/id_rsa.<br>Your public key has been saved in /c/Users/you/.ssh/id_rsa.pub.<br>The key fingerprint is:<br>01:0f:f4:3b:ca:85:d6:17:a1:7d:f0:68:9d:f0:a2:db <a href="mailto:your_email@example.com" target="_blank" rel="noopener">your_email@example.com</a></p>
+<p>第三步、在GitHub账户中添加你的公钥</p>
+<p>运行如下命令，将公钥的内容复制到系统粘贴板(clipboard)中。</p>
+<p>clip &lt; ~/.ssh/id_rsa.pub</p>
+<p>接着：</p>
+<pre><code>登陆GitHub,进入你的Account Settings.
+</code></pre><p>2.选择SSH Keys</p>
+<p>3.粘贴密钥，添加即可<br>第四步、测试</p>
+<p>可以输入下面的命令，看看设置是否成功，<a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a>的部分不要修改：</p>
+<p>$ ssh -T <a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a></p>
+<p>如果是下面的反馈：</p>
+<p>The authenticity of host ‘github.com (207.97.227.239)’ can’t be established.<br>RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.<br>Are you sure you want to continue connecting (yes/no)?</p>
+<p>不要紧张，输入yes就好，然后会看到：</p>
+<p>Hi cnfeat! You’ve successfully authenticated, but GitHub does not provide shell access.</p>
+<p>第五步、设置用户信息</p>
+<p>现在你已经可以通过SSH链接到GitHub了，还有一些个人信息需要完善的。<br>Git会根据用户的名字和邮箱来记录提交。GitHub也是用这些信息来做权限的处理，输入下面的代码进行个人信息的设置，把名称和邮箱替换成你自己的，名字必须是你的真名，而不是GitHub的昵称。</p>
+<p>$ git config –global user.name “cnfeat”//用户名<br>$ git config –global user.email  “<a href="mailto:cnfeat@gmail.com" target="_blank" rel="noopener">cnfeat@gmail.com</a>“//填写自己的邮箱</p>
+<p>第六步、SSH Key配置成功</p>
+<p>本机已成功连接到github。<br>如有问题，请参考：</p>
+<p>GitHub Help - Generating SSH Keys</p>
+<p>Error: Permission denied (publickey)<br>四、将本地的Hexo文件更新到Github的库中<br>第一步、登录Github打开自己的项目 username.github.io<br>第二步、打开之后，点击HTTPS，选择HTTPS类型地址<br>第三步、复制地址<br>第四步、打开你一开始创建的Hexo文件夹（如F:\Blog\Hexo），用记事本打开刚文件夹下的_config.yml文件<br>第五步、在配置文件里作如下修改，保存<br>第六步、在Hexo文件夹下执行：</p>
+<p>hexo g<br>hexo d</p>
+<p>或者直接执行</p>
+<p>hexo g -d</p>
+<p>执行完之后会让你输入github的账号和密码，输入完后就可以登录我们自己的部署在Github Pages服务器上的博客了。对应的地址是 username.github.io(我的是：ryanlijianchang.github.io)。<br>第七步、在浏览器上输入自己的主页地址</p>
+<p>在浏览器上输入即可看到我们自己的博客，别人电脑输入也可以哦。</p>
+<p>美化自己博客</p>
+<p>那么现在我们的博客已经挂在了服务器上面，别人已经可以通过网址来登陆我们的博客了，但是我们这时就有了新的需求，就是自己的博客并不好看，那怎么办的？这很简单，要知道很多前端开发者在Hexo框架下开发了很多的主题给我们使用，我们只需要把他们的主题克隆过来，然后通过修改配置文件即可达到我们所需要的效果。</p>
+<p>那么我们应该怎么修改呢？<br>一、进入Hexo的官网主题专栏<br>二、挑选我们喜欢的主题</p>
+<p>可以看到有很多主题给我们选，我们只要选择喜欢的主题点击进去，然后进入到它的github地址，我们只要把这个地址复制下来(例如我是选择：hexo-theme-next这个主题)<br>三、克隆主题</p>
+<p>再打开Hexo文件夹下的themes目录（F:\Blog\hexo\themes），右键Git Bash，在命令行输入:</p>
+<p>git clone <a href="https://github.com/iissnan/hexo-theme-next(此处地址替换成你需要使用的主题的地址)" target="_blank" rel="noopener">https://github.com/iissnan/hexo-theme-next(此处地址替换成你需要使用的主题的地址)</a> </p>
+<p>下载中，等待下载完成：<br>四、修改Hexo配置文件</p>
+<p>下载完成后，打开Hexo文件夹下的配置文件_config.yml</p>
+<p>修改参数为：theme: hexo-theme-next<br>五、部署主题，本地查看效果</p>
+<p>返回Hexo目录，右键Git Bash，输入</p>
+<p>hexo g<br>hexo s</p>
+<p>打开浏览器，输入 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a> 即可看见我们的主题已经更换了。<br>六、如果效果满意，将它部署到Github上</p>
+<p>打开Hexo文件夹，右键Git Bash，输入</p>
+<p>hexo clean   (必须要，不然有时因为缓存问题，服务器更新不了主题)<br>hexo g -d</p>
+<p>七、打开自己的主页，即可看到修改后的效果</p>
+<p>更多修改效果请查看对应主题的说明文档，点击此查看本主题(Next)对应的说明文档。<br>在博客写文章<br>一、用hexo发表新文章</p>
+<p>$ hexo n “文章标题” </p>
+<p>其中 我的家 为文章标题，执行命令 hexo n “我的家” 后，会在项目 \Hexo\source_posts 中生成 我的家.md文件，用编辑器打开编写即可。</p>
+<p>当然，也可以直接在\Hexo\source_posts中新建一个md文件，我就是这么做的。<br>写完后，推送到服务器上，执行以下命令即可在我们的站点看到新的文章。</p>
+<p>$ hexo g #生成<br>$ hexo d #部署 # 可与hexo g合并为 hexo d -g</p>
+<p>二、用Markdown写文章</p>
+<p>我们注意到在 \Hexo\source_posts 文件夹下存放着我们的文章，它们的格式都是以.md格式结尾的，没错，Hexo也是支持Markdown语法的，所以当我们需要写具有格式化的文章时，我们可以使用支持Markdown语法的编辑器进行文章编译，然后保存文件到 \Hexo\source_posts 文件夹下即可。</p>
+<p>复制进去之后，只要执行</p>
+<p>$ hexo d -g </p>
+<p>推送到我们的Github仓库即可。<br>那么什么是Markdown？</p>
+<p>Markdown 是一种轻量级的「标记语言」，它的优点很多，目前也被越来越多的写作爱好者，撰稿者广泛使用。看到这里请不要被「标记」、「语言」所迷惑，Markdown 的语法十分简单。常用的标记符号也不超过十个，这种相对于更为复杂的HTML 标记语言来说，Markdown 可谓是十分轻量的，学习成本也不需要太多，且一旦熟悉这种语法规则，会有一劳永逸的效果。<br>Markdown有什么优点？</p>
+<pre><code>专注你的文字内容而不是排版样式。
+轻松的导出 HTML、PDF 和本身的 .md 文件。
+纯文本内容，兼容所有的文本编辑器与字处理软件。
+可读，直观。适合所有人的写作语言。
+</code></pre><p>我该用什么工具？</p>
+<pre><code>Windows下可以使用 MarkdownPad2。
+在 Mac OS X 上，我建议你用 Mou 这款免费且十分好用的 Markdown 编辑器。
+Web 端上，我强烈推荐 简书 这款产品。
+</code></pre><p>关于Markdown的更多资料可以查看如下：</p>
+<pre><code>认识与入门 Markdown
+Markdown入门指南
+</code></pre><p>将自己的域名关联到Github Pages上</p>
+<p>很多朋友创建了自己的博客之后会选择买一个属于自己的域名，然后将自己域名绑定到自己的Github Pages博客上，其实这也并不难，只要你有个域名。<br>一、购买域名</p>
+<p>如果你不是很有钱，在阿里云上，你只要几块钱就可以买到一个域名。</p>
+<p>选择你喜欢的域名，然后购买即可。<br>二、配置CNAME文件</p>
+<p>在 \hexo\source 文件夹下创建文件 CNAME （新建记事本文件命名CNAME，然后打开）</p>
+<p>内容为你的域名，例如我的域名是：lijianchang.xyz</p>
+<p>在Hexo文件夹提交</p>
+<p>hexo g -d</p>
+<p>三、修改DNS的DNS</p>
+<p>1.如果你是在阿里云购买域名的话，请登录阿里云网站。打开个人中心，点击域名</p>
+<p>2.选择管理</p>
+<p>3.修改DNS为</p>
+<p>f1g1ns2.dnspod.net<br>f1g1ns1.dnspod.net </p>
+<p>四、域名解析</p>
+<pre><code>打开DNSPOD，注册一个账户
+
+点击添加域名，把你的域名添加进去，如无意外，添加完之后就是以下这个状态
+
+此时点击添加记录，添加两个记录，一个主机记录为@， 一个为www，而记录值都是填同一个，填你的博客主页对应的ip，添加完后如下。
+
+但是如何获取ip值呢？打开运行，输入cmd，打开命令窗口输入 ping 主页地址 ， 红色部分即为你的ip值
+
+将IP输入过去即可。等待生效，最迟72小时生效。即可通过你的域名浏览你的博客主页。
+</code></pre><p>作者：RyaneLee<br>链接：<a href="https://www.jianshu.com/p/15ae47eddc56" target="_blank" rel="noopener">https://www.jianshu.com/p/15ae47eddc56</a><br>來源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+
+    </article>
+    <!-- 前后页  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2018/03/06/hello-world/" title= Hello World >
+                    <div class="prevTitle">Hello World</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!--PC版-->
+
+    <!--PC版-->
+
+
+    
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:12345@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/fi3ework" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/example_qr.png" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+        <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#npm-install-g-cnpm-–registry-https-registry-npm-taobao-org"><span class="toc-number">1.</span> <span class="toc-text">npm install -g cnpm –registry=https://registry.npm.taobao.org</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装完成后，根据自己喜好建立目录（如F-Blog-Hexo），直接进入F-Blog-Hexo文件夹下右键鼠标，点击Git-Bash-Here，进入Git命令框，执行以下操作。"><span class="toc-number">2.</span> <span class="toc-text">安装完成后，根据自己喜好建立目录（如F:\Blog\Hexo），直接进入F:\Blog\Hexo文件夹下右键鼠标，点击Git Bash Here，进入Git命令框，执行以下操作。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#npm-install"><span class="toc-number">3.</span> <span class="toc-text">$ npm install</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#npm-install-hexo-generator-sitemap-1-–save"><span class="toc-number">4.</span> <span class="toc-text">npm install hexo-generator-sitemap@1 –save</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行下面语句，执行完即可登录localhost-4000查看效果"><span class="toc-number">5.</span> <span class="toc-text">执行下面语句，执行完即可登录localhost:4000查看效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hexo-server"><span class="toc-number">6.</span> <span class="toc-text">hexo server</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-archive"> Total : 2 </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href= "/2018/03/07/小白搭建博客github-hexo/" >小白搭建博客github+hexo</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/06</span><a class="archive-post-title" href= "/2018/03/06/hello-world/" >Hello World</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: '/',
+        author: 'bmjoker'
+    }
+</script>
+    <!-- busuanzi  -->
+    
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+    
+    </body>
+</html>
+
+
